@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: gestion_proyectos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      NODE_ENV: development
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: gestion_proyectos
+      DB_USER: postgres
+      DB_PASS: postgres
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+    command: sh -c "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && npm run dev"
+
+volumes:
+  pgdata:
